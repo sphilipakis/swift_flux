@@ -10,10 +10,10 @@
 import Foundation
 
 public struct Action {
-    let name : String
-    let properties : [String:AnyObject]
+    public let name : String
+    public let properties : [String:Any]
     
-    public init(name:String,properties:[String:AnyObject]) {
+    public init(name:String,properties:[String:Any]) {
         self.name = name
         self.properties = properties
     }

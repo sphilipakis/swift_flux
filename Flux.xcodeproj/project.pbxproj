@@ -17,6 +17,7 @@
 		F94953461BA5FABA008AE5D9 /* Flux.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F94953241BA5FA8A008AE5D9 /* Flux.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		F949534B1BA5FAD6008AE5D9 /* Flux.swift in Sources */ = {isa = PBXBuildFile; fileRef = F949534A1BA5FAD6008AE5D9 /* Flux.swift */; settings = {ASSET_TAGS = (); }; };
 		F94953531BA65FDC008AE5D9 /* FluxTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94953521BA65FDB008AE5D9 /* FluxTests.swift */; };
+		F98059CA1BA860C7000F98BD /* Stores.swift in Sources */ = {isa = PBXBuildFile; fileRef = F98059C91BA860C7000F98BD /* Stores.swift */; settings = {ASSET_TAGS = (); }; };
 		F9FB9E001BA72C2000E87CE9 /* Flux.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F94953241BA5FA8A008AE5D9 /* Flux.framework */; };
 /* End PBXBuildFile section */
 
@@ -66,6 +67,7 @@
 		F94953501BA65FDB008AE5D9 /* FluxTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FluxTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		F94953521BA65FDB008AE5D9 /* FluxTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FluxTests.swift; sourceTree = "<group>"; };
 		F94953541BA65FDC008AE5D9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		F98059C91BA860C7000F98BD /* Stores.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Stores.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -128,6 +130,7 @@
 		F94953341BA5FA9E008AE5D9 /* FluxSample */ = {
 			isa = PBXGroup;
 			children = (
+				F98059C91BA860C7000F98BD /* Stores.swift */,
 				F94953351BA5FA9E008AE5D9 /* AppDelegate.swift */,
 				F94953371BA5FA9E008AE5D9 /* ViewController.swift */,
 				F94953391BA5FA9E008AE5D9 /* Main.storyboard */,
@@ -299,6 +302,7 @@
 			files = (
 				F94953381BA5FA9E008AE5D9 /* ViewController.swift in Sources */,
 				F94953361BA5FA9E008AE5D9 /* AppDelegate.swift in Sources */,
+				F98059CA1BA860C7000F98BD /* Stores.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
