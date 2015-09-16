@@ -26,26 +26,27 @@ class ViewController: UIViewController {
         }
     }
     
-    func postsStoreDidChange(_:NSNotification) {
-        print("new posts : \(postsStore.posts)")
+    func ratesStoreDidChange(_:NSNotification) {
+        print("new posts : \(ratesStore.rates)")
         tableView.reloadData()
     }
     
     override func awakeFromNib() {
         super.awakeFromNib()
         appStateStore.addObserver(self, callback: "appStateStoreDidChange:")
-        postsStore.addObserver(self, callback: "postsStoreDidChange:")
+        ratesStore.addObserver(self, callback: "ratesStoreDidChange:")
     }
     
     deinit {
         appStateStore.removeObserver(self)
-        postsStore.removeObserver(self)
+        ratesStore.removeObserver(self)
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         //tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: "cell")
+        ratesActionCreator.fetchRates()
     }
 
     override func didReceiveMemoryWarning() {
@@ -55,7 +56,7 @@ class ViewController: UIViewController {
 
 
     @IBAction func fetchButtonAction(sender: AnyObject) {
-        postsActionCreator.fetchPosts()
+        ratesActionCreator.fetchRates()
     }
 }
 
@@ -64,8 +65,8 @@ extension ViewController : UITableViewDataSource {
         return 1
     }
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if let posts = postsStore.posts {
-            return posts.count
+        if let rates = ratesStore.rates {
+            return rates.count
         } else {
             return 0
         }
@@ -73,10 +74,13 @@ extension ViewController : UITableViewDataSource {
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         
         let cell = tableView.dequeueReusableCellWithIdentifier("cell",forIndexPath:indexPath) as UITableViewCell
-        if let posts = postsStore.posts {
-            cell.textLabel?.text = posts[indexPath.row].title
+        if let rates = ratesStore.rates {
+            let rate = rates[indexPath.row]
+            cell.textLabel?.text = rate.ticker
+            cell.detailTextLabel?.text = "\(rate.symbol) \(rate.last)"
         } else {
             cell.textLabel?.text = "Nothing!"
+            cell.detailTextLabel?.text = "-"
         }
         return cell
     }

@@ -35,7 +35,7 @@ class FluxTests: XCTestCase {
         
         let theStore = MyStore()
 
-        theStore.register(MainDispatcher) {
+        theStore.registerOnDispatcher(MainDispatcher) {
             action in
             print("Action : \(action)")
         }
@@ -58,7 +58,7 @@ class FluxTests: XCTestCase {
         let expectation = expectationWithDescription("store should run handle")
         let action = Action(name:"test",properties:["theKey":"the value"])
         var testSore = MyStore()
-        testSore.register(MainDispatcher) {
+        testSore.registerOnDispatcher(MainDispatcher) {
             action in
             if action.name != "test" {
                 XCTFail("action name should be 'test'")
@@ -94,11 +94,11 @@ class FluxTests: XCTestCase {
         let action = Action(name:"test",properties:["theKey":"the value"])
         let storeA = StoreA()
         let storeB = StoreB()
-        storeA.register(MainDispatcher) {
+        storeA.registerOnDispatcher(MainDispatcher) {
             action in
             storeA.state = "Done"
         }
-        storeB.register(MainDispatcher) {
+        storeB.registerOnDispatcher(MainDispatcher) {
             action in
             MainDispatcher.waitFor([storeA.registrationToken!])
             if storeA.state == "Done" {

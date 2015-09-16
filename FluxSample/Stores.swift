@@ -9,6 +9,13 @@
 import Foundation
 import Flux
 
+
+extension Action {
+    static func updateAppState(state:AppStateStore.NetworkState) -> Action {
+        return Action(name: "updateAppState", properties: ["state":state])
+    }
+}
+
 let MainDispatcher = Dispatcher()
 
 class AppStateStore : BaseStore {
@@ -19,7 +26,7 @@ class AppStateStore : BaseStore {
     var networkState : NetworkState = .Ready
     override init() {
         super.init()
-        register(MainDispatcher) {
+        registerOnDispatcher(MainDispatcher) {
             action in
             switch action.name {
                 case "updateAppState":
@@ -41,43 +48,87 @@ class AppStateStore : BaseStore {
 
 let appStateStore = AppStateStore()
 
-
-struct Post {
-    let title:String
-    init(title:String){
-        self.title = title
+struct Rate {
+    let ticker : String
+    let symbol : String
+    let last : Float
+    init(ticker:String,symbol:String, last:Float){
+        self.ticker = ticker
+        self.symbol = symbol
+        self.last = last
     }
 }
 
-class PostsStore : BaseStore {
-    private(set) var posts : [Post]?
-    
+class RatesStore : BaseStore {
+    private(set) var rates : [Rate]?
     override init() {
         super.init()
-        register(MainDispatcher) {
+        registerOnDispatcher(MainDispatcher) {
             action in
             switch action.name {
-            case "updatePosts":
-                self.handleUpdatePostsAction(action)
+            case "updateRates":
+                self.handleUpdateRatesAction(action)
             default:
                 return
             }
         }
     }
     
-    func handleUpdatePostsAction(action:Action) {
-        if let thePosts = action.properties["posts"] as? [Post] {
-            posts = thePosts
+    func handleUpdateRatesAction(action:Action) {
+        if let theRates = action.properties["rates"] as? [Rate] {
+            rates = theRates
             emmitChange()
         }
     }
 }
+let ratesStore = RatesStore()
 
-let postsStore = PostsStore()
+struct RatesActionCreator {
+    
+    func dispatchOnMainThread(action:Action) {
+        dispatch_async(dispatch_get_main_queue()) {
+            MainDispatcher.dispatch(action)
+        }
+    }
+    
+    func fetchRates(){
+        dispatchOnMainThread(Action(name:"updateAppState", properties: ["state":AppStateStore.NetworkState.Loading.rawValue]))
+        
+        let urlPath: String = "https://blockchain.info/ticker"
+        let url: NSURL = NSURL(string: urlPath)!
+        let request1: NSURLRequest = NSURLRequest(URL: url)
 
-struct PostsActionCreator {
-    func fetchPosts(){
-        MainDispatcher.dispatch(Action(name:"updateAppState", properties: ["state":AppStateStore.NetworkState.Loading.rawValue]))
+        let session = NSURLSession(configuration: NSURLSessionConfiguration.defaultSessionConfiguration())
+        let dataTask = session.dataTaskWithRequest(request1) {
+            (data:NSData?, response:NSURLResponse?, error:NSError?) in
+            self.dispatchOnMainThread(Action(name:"updateAppState", properties: ["state":AppStateStore.NetworkState.Ready.rawValue]))
+            
+            if let err = error {
+                print("error: \(err)")
+            } else if let thedata = data {
+                do {
+                    let jsonResult = try NSJSONSerialization.JSONObjectWithData(thedata, options: NSJSONReadingOptions.AllowFragments)
+                    guard let jsonArray = jsonResult as? [String:[String:AnyObject]] else {
+                        print("not an array \(jsonResult)")
+                        return
+                    }
+                    var rates = [Rate]()
+                    for (ticker,tickerData) in jsonArray {
+                        if let last = tickerData["last"] as? Float, symbol = tickerData["symbol"] as? String {
+                            let rate = Rate(ticker: ticker,symbol:symbol, last: last)
+                            rates.append(rate)
+                        }
+                    }
+                    self.dispatchOnMainThread(Action(name:"updateRates", properties: ["rates":rates]))
+                } catch let err as NSError {
+                    print("Parsing error \(err)")
+                }
+            }
+        }
+        dataTask.resume()
+            /*
+        
+        
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(2 * Double(NSEC_PER_SEC))), dispatch_get_main_queue()) {
             //let post0 = Post(title: "post 0")
             var posts = [Post]()
@@ -87,7 +138,8 @@ struct PostsActionCreator {
             MainDispatcher.dispatch(Action(name:"updateAppState", properties: ["state":AppStateStore.NetworkState.Ready.rawValue]))
             MainDispatcher.dispatch(Action(name:"updatePosts", properties: props))
         }
+*/
     }
 }
 
-let postsActionCreator = PostsActionCreator()
+let ratesActionCreator = RatesActionCreator()

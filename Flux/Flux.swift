@@ -42,8 +42,8 @@ public class BaseStore:Store {
         
     }
        
-    public func register(dispatcher:Dispatcher, handler:((action:Action) -> ())) {
-        self.handler = handler
+    public func registerOnDispatcher(dispatcher:Dispatcher, callback:((action:Action) -> ())) {
+        self.handler = callback
         dispatcher.register(self);
     }
     
