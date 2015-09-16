@@ -10,12 +10,6 @@ import Foundation
 import Flux
 
 
-extension Action {
-    static func updateAppState(state:AppStateStore.NetworkState) -> Action {
-        return Action(name: "updateAppState", properties: ["state":state])
-    }
-}
-
 let MainDispatcher = Dispatcher()
 
 class AppStateStore : BaseStore {
@@ -126,19 +120,6 @@ struct RatesActionCreator {
             }
         }
         dataTask.resume()
-            /*
-        
-        
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(2 * Double(NSEC_PER_SEC))), dispatch_get_main_queue()) {
-            //let post0 = Post(title: "post 0")
-            var posts = [Post]()
-            posts.append(Post(title: "post 1"))
-            posts.append(Post(title: "post 2"))
-            let props : [String:Any] = ["posts":posts]
-            MainDispatcher.dispatch(Action(name:"updateAppState", properties: ["state":AppStateStore.NetworkState.Ready.rawValue]))
-            MainDispatcher.dispatch(Action(name:"updatePosts", properties: props))
-        }
-*/
     }
 }
 
