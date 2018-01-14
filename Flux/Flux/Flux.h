@@ -2,8 +2,8 @@
 //  Flux.h
 //  Flux
 //
-//  Created by spsadmin on 9/13/15.
-//  Copyright © 2015 Friendly App Studio. All rights reserved.
+//  Created by spsadmin on 1/13/18.
+//  Copyright © 2018 Friendly App Studio. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>

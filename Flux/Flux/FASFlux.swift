@@ -8,7 +8,7 @@
 
 import Foundation
 
-typealias FASFluxCallback = (Any) -> Void
+public typealias FASFluxCallback = (Any) -> Void
 
 
 enum FASFluxCallbackType {
@@ -24,7 +24,7 @@ protocol FASFluxDispatcherLogDelegate: class {
   func dispatcherLog(_ dispatcher: FASFluxDispatcher, level: FASLogLevel, message: String, error: Error?)
 }
 
-class FASFluxDispatcher {
+public class FASFluxDispatcher {
     var lastID : Int = 0
 
     let dispatchQueue : DispatchQueue
@@ -168,27 +168,7 @@ extension FASFluxDispatcher {
   }
 }
 
-/*class FASDefaultDispatcher: FASFluxDispatcher {
-    static let sharedDispatcher = FASDefaultDispatcher()
-
-    /*class func register(fn: @escaping FASFluxCallback) -> String {
-      return sharedDispatcher.register(fn: fn)
-    }
-
-    class func unregister(token: String) {
-        sharedDispatcher.unregister(token: token)
-    }*/
-    class func dispatchAction(action: Any) {
-        sharedDispatcher.dispatchAction(action: action)
-    }
-    class func waitFor(stores: [FASFluxStore]) {
-        sharedDispatcher.waitFor(stores: stores)
-    }
-}*/
-
-
-
-protocol FASStoreObserving: class {
+public protocol FASStoreObserving: class {
     func observeChange(store:FASFluxStore,userInfo:[AnyHashable:Any]?)
 }
 
@@ -207,14 +187,14 @@ fileprivate class FASObserverProxy {
   }
 }
 
-class FASFluxStore {
+open class FASFluxStore {
     // CHANGED: don't expose the token
     fileprivate var dispatchToken : String?
     private var observerProxies : [FASObserverProxy] = []
   
     var name: String?
   
-    func registerWithDispatcher(_ dispatcher: FASFluxDispatcher, callback: @escaping FASFluxCallback) {
+    public func registerWithDispatcher(_ dispatcher: FASFluxDispatcher, callback: @escaping FASFluxCallback) {
       dispatchToken = dispatcher.register(fn: callback, storeName: name)
     }
   
@@ -225,22 +205,25 @@ class FASFluxStore {
       dispatchToken = nil
     }
 
+    public init() {
+        
+    }
 
     /*func waitFor(tokens:[String]) {
         FASDefaultDispatcher.waitFor(tokens: tokens)
     }*/
     
-    func add(observer:FASStoreObserving) {
+    public func add(observer:FASStoreObserving) {
       let weakObserver = FASObserverProxy(observer: observer)
       observerProxies.append(weakObserver)
     }
-    func remove(observer:FASStoreObserving) {
+    public func remove(observer:FASStoreObserving) {
         if let index = observerProxies.index(where: { po in return po.observer === observer }) {
             observerProxies.remove(at: index)
         }
     }
     
-    func emitChange(userInfo: [AnyHashable:Any]?) {
+    public func emitChange(userInfo: [AnyHashable:Any]?) {
         guard Thread.isMainThread else {
             NSLog("%@", "FATAL : Emit Change on \(self) has to be done from main Thread!!!!!")
             abort()
@@ -251,27 +234,23 @@ class FASFluxStore {
       
     }
 
-    func emitChange() {
+    public func emitChange() {
         emitChange(userInfo: nil)
     }
-    func emitChange(asResultOfActionType actionType:String) {
+    public func emitChange(asResultOfActionType actionType:String) {
         emitChange(userInfo: ["afterAction":actionType])
     }
-    // CHANGED: removed because it doesn't seem to be used
-    /*func setNeedsEmitChange(afterDelay delay:TimeInterval) {
-        NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(FASFluxStore.emitChange as (FASFluxStore) -> () -> ()), object: nil)
-        perform(#selector(FASFluxStore.emitChange as (FASFluxStore) -> () -> ()), with: nil, afterDelay: delay)
-    }*/
+
 }
 
-protocol FASActionCreator {
+public protocol FASActionCreator {
 }
 
-extension FASActionCreator {
-  var dispatcher: FASFluxDispatcher {
+public extension FASActionCreator {
+  static var dispatcher: FASFluxDispatcher {
     return FASFluxDispatcher.main
   }
-  func dispatchAsync(action:Any, completion: (()->Void)? = nil) {
+  static func dispatchAsync(action:Any, completion: (()->Void)? = nil) {
         DispatchQueue.main.async {
           self.dispatcher.dispatchAction(action: action)
           if completion != nil {
@@ -279,7 +258,7 @@ extension FASActionCreator {
           }
         }
     }
-    func dispatch(action:Any) {
+  static func dispatch(action:Any) {
       // CHANGED: removed the syncIfOnMainThread, because it's confusing for the client (client needs to know if this will execute synchronously)
       if Thread.isMainThread {
         self.dispatcher.dispatchAction(action: action)
