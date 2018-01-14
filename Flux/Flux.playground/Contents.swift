@@ -7,7 +7,7 @@ import Flux
 enum CounterAction {
     case increment
     case decrement
-    class Creator: FASActionCreator {
+    class Creator: ActionCreating {
         class func increment() {
             dispatch(action: CounterAction.increment)
         }
