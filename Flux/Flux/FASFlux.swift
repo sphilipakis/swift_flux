@@ -217,7 +217,6 @@ open class FASFluxStore {
     if existing == nil {
       let weakObserver = FASObserverProxy(observer: observer)
       observerProxies.append(weakObserver)
-      VERBOSE("OK Added observer \(String(describing: observer))")
     } else {
       log(level: .warn, message: "⚠️ '\(String(describing: observer))' is already observing '\(String(describing: self))'.")
     }
@@ -303,4 +302,3 @@ public extension ActionCreating {
     }
   }
 }
-
